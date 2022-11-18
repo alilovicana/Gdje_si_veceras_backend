@@ -28,24 +28,22 @@ app.post("/Registration", (req, res) => {
         }
     );
 });
-// app.post('/CreatePost', (req, res) => {
-//     const user_id=req.body.user_id;
-//     const content = req.body.content;
-//     const likes = req.body.likes;
-//     const created_time = req.body.created_time;
-//     const adress = req.body.adress;
-//     db.query("INSERT INTO Posts(user_id,content,likes,created_time,adress) VALUES (?,?,?,?,?)",[user_id,content,likes,created_time,adress],
-//     (err,result)=>{
-//         if(err){
-//             console.log(err)
-//         }
-//         else{
-//             res.send("Values Inserted")
-//         }
-//     }
-//     );
+app.post('/CreatePost', (req, res) => {
+    // const user_id=req.body.user_id;
+    const content = req.body.content;
+    const adress = req.body.adress;
+    db.query("INSERT INTO posts(content,adress) VALUES (?,?)",[content,adress],
+    (err,result)=>{
+        if(err){
+            console.log(err)
+        }
+        else{
+            res.send("Values Inserted")
+        }
+    }
+    );
 
-// });
+});
 app.listen(3001, () => {
     console.log("jej your serveer is running!");
 });
