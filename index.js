@@ -28,7 +28,7 @@ app.post("/Registration", (req, res) => {
         }
     );
 });
-app.post('/CreatePost', (req, res) => {
+app.post('/CreateAds', (req, res) => {
     // const user_id=req.body.user_id;
     const content = req.body.content;
     const adress = req.body.adress;
@@ -43,6 +43,17 @@ app.post('/CreatePost', (req, res) => {
     }
     );
 
+});
+app.get('/showAds', (req, res) => {
+    db.query("SELECT* FROM posts",
+    (err,result)=>{
+        if(err){
+            console.log(err)
+        }
+        else{
+            res.send(result)
+        }
+    })
 });
 app.listen(3001, () => {
     console.log("jej your serveer is running!");
