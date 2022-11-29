@@ -6,6 +6,8 @@ const app = express()
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
+const jwt=require('jsonwebtoken');
+
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -78,6 +80,25 @@ app.post("/Registration", (req, res) => {
 //         }
 //     ));
 // });
+const verifyJWT=(req,res,next)=>{
+    const token=req.headers["x-access-token"]
+    if(!token){
+        res.send("Give us token next time");
+    }else{
+        jwt.verify(token,"jwtSecret",(err,decoded)=>{
+            if(err){
+                res.json({auth:false,message:"You failed to euthenticated"});
+            }else{
+                req.userId=decoded.id;
+                next();
+            }
+        })
+    }
+}
+
+app.get("/isUserAuth",verifyJWT,(req,res)=>{
+    res.send("You are authantucate Congrats!");
+})
 app.get("/Login", (req, res) => {
     if (req.session.user) {
         res.send({ loggedIn: true, user: req.session.user });
@@ -100,15 +121,19 @@ app.post("/Login", (req, res) => {
             if (result.length > 0) {
                 bcrypt.compare(password, result[0].password, (error, response) => {
                     if (response) {
+
+                        const id=result[0].id;
+                        const token=jwt.sign({id},"jwtSecret",{
+                            expiresIn:300,
+                        })
                         req.session.user = result;
-                        console.log(req.session.user);
-                        res.send(result);
+                        res.json({auth:true,token:token,result:result});
                     } else {
-                        res.send({ message: "Pogrešan unos! Pokušajte ponovo" });
+                        res.json({auth:false,message:"Pogrešan unos"});
                     }
                 });
             } else {
-                res.send({ message: "Korisnik ne postoji" });
+                res.json({auth:false,message:"Korisnik ne postoji"});
             }
         }
     ));
