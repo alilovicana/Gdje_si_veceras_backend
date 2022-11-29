@@ -13,26 +13,26 @@ const session = require("express-session");
 app.use(express.json());
 app.use(
     cors({
-      origin: ["http://localhost:3400"],
-      methods: ["GET", "POST"],
-      credentials: true,
+        origin: ["http://localhost:3400"],
+        methods: ["GET", "POST","PUT","DELETE"],
+        credentials: true,
     })
-  );
-  app.use(cookieParser());
-  app.use(bodyParser.urlencoded({ extended: true }));
-  
-  app.use(
+);
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
     session({
-      key: "userId",
-      secret: "vitez",
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        expires: 1000 * 60 * 25 * 60 ,
-      },
+        key: "userId",
+        secret: "vitez",
+        resave: false,
+        saveUninitialized: false,
+        // cookie: {
+        //     expires: 1000 * 60 * 25 * 60,
+        // },
     })
-  );
-  
+);
+
 const db = mysql.createConnection({
     user: 'root',
     host: 'localhost',
@@ -80,11 +80,11 @@ app.post("/Registration", (req, res) => {
 // });
 app.get("/Login", (req, res) => {
     if (req.session.user) {
-      res.send({ loggedIn: true, user: req.session.user });
+        res.send({ loggedIn: true, user: req.session.user });
     } else {
-      res.send({ loggedIn: false });
+        res.send({ loggedIn: false });
     }
-  });
+});
 
 app.post("/Login", (req, res) => {
     const email = req.body.email;
@@ -97,7 +97,6 @@ app.post("/Login", (req, res) => {
             if (err) {
                 res.send({ err: err });
             }
-
             if (result.length > 0) {
                 bcrypt.compare(password, result[0].password, (error, response) => {
                     if (response) {
@@ -112,8 +111,6 @@ app.post("/Login", (req, res) => {
                 res.send({ message: "Korisnik ne postoji" });
             }
         }
-
-
     ));
 });
 app.post('/CreateAds', (req, res) => {
@@ -144,7 +141,7 @@ app.get('/showAds', (req, res) => {
         })
 });
 
-app.put('/update', (req, res) => {
+app.put('/Update', (req, res) => {
     const id = req.body.id;
     const likes = req.body.likes;
     db.query("UPDATE posts SET likes=? WHERE id=?", [likes, id],
@@ -157,6 +154,11 @@ app.put('/update', (req, res) => {
             }
         }
     );
+});
+app.delete('/Logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy();
+      }
 });
 app.listen(3001, () => {
     console.log("jej your serveer is running!");
