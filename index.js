@@ -138,11 +138,11 @@ app.post("/Login", (req, res) => {
         }
     ));
 });
-app.post('/CreateAds', (req, res) => {
-    //const user_id=req.body.user_id;
+app.post('/CreateAds',  (req, res) => {
+    const user_id=req.body.user_id;
     const content = req.body.content;
     const adress = req.body.adress;
-    db.query("INSERT INTO posts(content,adress) VALUES (?,?)", [content, adress],
+    db.query("INSERT INTO posts(user_id,content,adress) VALUES (?,?,?)", [user_id, content, adress],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -154,6 +154,17 @@ app.post('/CreateAds', (req, res) => {
     );
 
 });
+// app.get('/ads/:id', (req, res) => {
+//     db.query("SELECT* FROM users WHERE user_id = ?;",[user_id],
+//         (err, result) => {
+//             if (err) {
+//                 console.log(err)
+//             }
+//             else {
+//                 res.send(result)
+//             }
+//         })
+// });
 app.get('/showAds', (req, res) => {
     db.query("SELECT* FROM posts",
         (err, result) => {
