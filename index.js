@@ -6,7 +6,7 @@ const app = express()
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const jwt=require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(
     cors({
         origin: ["http://localhost:3400"],
-        methods: ["GET", "POST","PUT","DELETE"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     })
 );
@@ -80,23 +80,23 @@ app.post("/Registration", (req, res) => {
 //         }
 //     ));
 // });
-const verifyJWT=(req,res,next)=>{
-    const token=req.headers["x-access-token"]
-    if(!token){
+const verifyJWT = (req, res, next) => {
+    const token = req.headers["x-access-token"]
+    if (!token) {
         res.send("Give us token next time");
-    }else{
-        jwt.verify(token,"jwtSecret",(err,decoded)=>{
-            if(err){
-                res.json({auth:false,message:"You failed to euthenticated"});
-            }else{
-                req.userId=decoded.id;
+    } else {
+        jwt.verify(token, "jwtSecret", (err, decoded) => {
+            if (err) {
+                res.json({ auth: false, message: "You failed to euthenticated" });
+            } else {
+                req.userId = decoded.id;
                 next();
             }
         })
     }
 }
 
-app.get("/isUserAuth",verifyJWT,(req,res)=>{
+app.get("/isUserAuth", verifyJWT, (req, res) => {
     res.send("You are authantucate Congrats!");
 })
 app.get("/Login", (req, res) => {
@@ -122,24 +122,24 @@ app.post("/Login", (req, res) => {
                 bcrypt.compare(password, result[0].password, (error, response) => {
                     if (response) {
 
-                        const id=result[0].id;
-                        const token=jwt.sign({id},"jwtSecret",{
-                            expiresIn:300,
+                        const id = result[0].id;
+                        const token = jwt.sign({ id }, "jwtSecret", {
+                            expiresIn: 300,
                         })
                         req.session.user = result;
-                        res.json({auth:true,token:token,result:result});
+                        res.json({ auth: true, token: token, result: result });
                     } else {
-                        res.json({auth:false,message:"Pogrešan unos"});
+                        res.json({ auth: false, message: "Pogrešan unos" });
                     }
                 });
             } else {
-                res.json({auth:false,message:"Korisnik ne postoji"});
+                res.json({ auth: false, message: "Korisnik ne postoji" });
             }
         }
     ));
 });
-app.post('/CreateAds',  (req, res) => {
-    const user_id=req.body.user_id;
+router.post('/CreateAds/:id', (req, res) => {
+    const user_id = req.body.user_id;
     const content = req.body.content;
     const adress = req.body.adress;
     db.query("INSERT INTO posts(user_id,content,adress) VALUES (?,?,?)", [user_id, content, adress],
@@ -176,6 +176,20 @@ app.get('/showAds', (req, res) => {
             }
         })
 });
+//get a user
+app.get("/", async (req, res) => {
+    const userId = req.query.userId;
+    const username = req.query.username;
+    try {
+        const user = userId
+            ? await User.findById(userId)
+            : await User.findOne({ username: username });
+        const { password, updatedAt, ...other } = user._doc;
+        res.status(200).json(other);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 app.put('/Update', (req, res) => {
     const id = req.body.id;
@@ -194,7 +208,7 @@ app.put('/Update', (req, res) => {
 app.delete('/Logout', (req, res) => {
     if (req.session) {
         req.session.destroy();
-      }
+    }
 });
 app.listen(3001, () => {
     console.log("jej your serveer is running!");
