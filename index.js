@@ -138,11 +138,13 @@ app.post("/Login", (req, res) => {
         }
     ));
 });
-router.post('/CreateAds/:id', (req, res) => {
+app.post('/CreateAds/:id', (req, res) => {
     const user_id = req.body.user_id;
     const content = req.body.content;
     const adress = req.body.adress;
-    db.query("INSERT INTO posts(user_id,content,adress) VALUES (?,?,?)", [user_id, content, adress],
+    const category = req.body.category;
+    const city = req.body.city;
+    db.query("INSERT INTO posts(user_id,content,adress,category,city) VALUES (?,?,?,?,?)", [user_id, content, adress,category,city],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -154,19 +156,8 @@ router.post('/CreateAds/:id', (req, res) => {
     );
 
 });
-// app.get('/ads/:id', (req, res) => {
-//     db.query("SELECT* FROM users WHERE user_id = ?;",[user_id],
-//         (err, result) => {
-//             if (err) {
-//                 console.log(err)
-//             }
-//             else {
-//                 res.send(result)
-//             }
-//         })
-// });
 app.get('/showAds', (req, res) => {
-    db.query("SELECT* FROM posts",
+    db.query("SELECT users.firstName,posts.* FROM posts INNER JOIN users ON users.id=posts.user_id",
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -176,21 +167,19 @@ app.get('/showAds', (req, res) => {
             }
         })
 });
-//get a user
-app.get("/", async (req, res) => {
-    const userId = req.query.userId;
-    const username = req.query.username;
-    try {
-        const user = userId
-            ? await User.findById(userId)
-            : await User.findOne({ username: username });
-        const { password, updatedAt, ...other } = user._doc;
-        res.status(200).json(other);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+app.put('/filter', (req, res) => {
+    const category = req.body.category;
+    const city = req.body.city;
+    db.query("SELECT * FROM posts WHERE city = (?) AND category = (?)", [city,category],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            }
+            else {
+                res.send(result)
+            }
+        })
 });
-
 app.put('/Update', (req, res) => {
     const id = req.body.id;
     const likes = req.body.likes;
