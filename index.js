@@ -174,7 +174,6 @@ const storage = multer.diskStorage({
         cb(null,Date.now()+path.extname(file.originalname));
     }
 });
-
 const upload = multer({ storage: storage });
 app.post('/upload', upload.single("image"), (req, res) => {
     if (!req.file) {
@@ -185,14 +184,21 @@ app.post('/upload', upload.single("image"), (req, res) => {
 
     } else {
         console.log('file received');
+        // return res.status(200).header({
+        //     'Content-Type': 'multipart/form-data',
+        //     'Content-Encoding': 'base64'
+        // }).send({
+        //     success: true,
+        //     image: new Buffer.from(req.file.buffer).toString('base64')
+        // })
         return res.send({
             success: true
-        })
+        });
     }
 });
 
 app.get('/showAds', (req, res) => {
-    db.query("SELECT users.firstName,posts.* FROM posts INNER JOIN users ON users.id=posts.user_id",
+    db.query("SELECT users.firstName,posts.*,profile.* FROM users INNER JOIN posts ON users.id=posts.user_id INNER JOIN profile ON users.id=profile.user_id" ,
         (err, result) => {
             if (err) {
                 console.log(err)
