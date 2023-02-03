@@ -4,9 +4,9 @@ const mysql = require('mysql')
 const cors = require('cors')
 const app = express();
 
-const router=express.Router();
+const router = express.Router();
 const multer = require('multer');
-const path=require('path');
+const path = require('path');
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -151,9 +151,9 @@ app.post('/CreateAds/:id', (req, res) => {
     const adress = req.body.adress;
     const category = req.body.category;
     const city = req.body.city;
-    const date=req.body.date;
-    const picture=req.body.picture;
-    db.query("INSERT INTO posts(user_id,content,adress,category,city,dateOfEvent,picture) VALUES (?,?,?,?,?,DATE(?),?)", [user_id, content, adress, category, city,date,picture],
+    const date = req.body.date;
+    const picture = req.body.picture;
+    db.query("INSERT INTO posts(user_id,content,adress,category,city,dateOfEvent,picture) VALUES (?,?,?,?,?,DATE(?),?)", [user_id, content, adress, category, city, date, picture],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -165,13 +165,13 @@ app.post('/CreateAds/:id', (req, res) => {
     );
 
 });
-//Upload a photo
+/////////UPLOAD A PHOTO DOWN//////////////////////
 const storage = multer.diskStorage({
-    destination: (req, file, cb)=> {
+    destination: (req, file, cb) => {
         cb(null, './images/');
     },
-    filename: (req, file, cb)=>{
-        cb(null,Date.now()+path.extname(file.originalname));
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
@@ -196,9 +196,9 @@ app.post('/upload', upload.single("image"), (req, res) => {
         });
     }
 });
-
+/////////SHOW THE POSTS//////////////////////
 app.get('/showAds', (req, res) => {
-    db.query("SELECT users.firstName,posts.*,profile.* FROM users INNER JOIN posts ON users.id=posts.user_id INNER JOIN profile ON users.id=profile.user_id" ,
+    db.query("SELECT users.firstName,posts.*,profile.* FROM users INNER JOIN posts ON users.id=posts.user_id INNER JOIN profile ON users.id=profile.user_id",
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -211,8 +211,8 @@ app.get('/showAds', (req, res) => {
 app.put('/filter', (req, res) => {
     const category = req.body.category;
     const city = req.body.city;
-    const date=req.body.date;
-    db.query("SELECT * FROM posts WHERE city = (?) AND category = (?) AND DATE(dateOfEvent)=DATE(?)", [city, category,date],
+    const date = req.body.date;
+    db.query("SELECT * FROM posts WHERE city = (?) AND category = (?) AND DATE(dateOfEvent)=DATE(?)", [city, category, date],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -222,16 +222,17 @@ app.put('/filter', (req, res) => {
             }
         })
 });
+/////////PROFILE//////////////////////
 app.post('/Profile/:id', (req, res) => {
     const user_id = req.body.user_id;
     // const profile_image = req.body.profile_image;
     // const first_and_last_name = req.body.first_and_last_name;
-    const email = req.body.email;
+    const costum_email = req.body.costum_email;
     const phone_number = req.body.phone_number;
     const about_me = req.body.about_me;
     // const rating = req.body.rating;
 
-    db.query("INSERT INTO profile(user_id,email,phone_number, about_me) VALUES (?,?,?,?)", [user_id, email, phone_number, about_me],
+    db.query("INSERT INTO profile(user_id,costum_email,phone_number, about_me) VALUES (?,?,?,?)", [user_id, costum_email, phone_number, about_me],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -246,12 +247,11 @@ app.put('/UpdateProfile/:id', (req, res) => {
     const user_id = req.body.user_id;
     // const profile_image = req.body.profile_image;
     // const first_and_last_name = req.body.first_and_last_name;
-    const email = req.body.email;
+    const costum_email = req.body.costum_email;
     const phone_number = req.body.phone_number;
     const about_me = req.body.about_me;
-    // const rating = req.body.rating;
 
-    db.query("UPDATE profile SET email=?,phone_number=?, about_me=? WHERE user_id=?", [email, phone_number, about_me, user_id],
+    db.query("UPDATE profile SET phone_number=?, costum_email=?, about_me=? WHERE user_id=?", [phone_number,costum_email, about_me, user_id],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -264,7 +264,7 @@ app.put('/UpdateProfile/:id', (req, res) => {
 });
 app.get('/Profile/:id', (req, res) => {
     const user_id = req.params.id;
-    db.query("SELECT phone_number,about_me FROM profile WHERE user_id=?",[user_id],
+    db.query("SELECT costum_email,phone_number,about_me FROM profile WHERE user_id=?", [user_id],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -275,6 +275,7 @@ app.get('/Profile/:id', (req, res) => {
         }
     );
 });
+/////////PROFILE UP//////////////////////
 app.put('/Update', (req, res) => {
     const id = req.body.id;
     const likes = req.body.likes;
@@ -292,19 +293,19 @@ app.put('/Update', (req, res) => {
 // app.post('/api/like', (req, res) => {
 //     // Increment likes count in database
 //     // ...
-  
-   
+
+
 //     // Send response indicating success
 //     res.send({ message: 'Successfully liked' });
 //   });
 //  app.post('/api/unlike', (req, res) => {
 //     // Decrement likes count in database
 //     // ...
-  
+
 //     // Send response indicating success
 //     res.send({ message: 'Successfully unliked' });
 //   });
-  
+
 app.delete('/Logout', (req, res) => {
     if (req.session) {
         req.session.destroy();
