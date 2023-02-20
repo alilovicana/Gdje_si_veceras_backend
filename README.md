@@ -11,7 +11,7 @@ The code for the backend of the application, "Gdje_si_veceras," can be found her
 ### `start`
 
 ```
-node inddex.js
+node index.js
 ```
 
 
