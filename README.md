@@ -1,4 +1,4 @@
-<img width="38" alt="logo" src="https://user-images.githubusercontent.com/97240452/220080702-d38a8862-e9b4-4edf-a8b7-62ec2f92933c.png"> ## ` Gdje_si_veceras` is an advertising application, primarily designed for event posting by users. It functions like a social media platform, allowing everyone to post their events.
+<img width="38" alt="logo" src="https://user-images.githubusercontent.com/97240452/220080702-d38a8862-e9b4-4edf-a8b7-62ec2f92933c.png">  ` Gdje_si_veceras` is an advertising application, primarily designed for event posting by users. It functions like a social media platform, allowing everyone to post their events.
 The application is comprised of two parts:
 
 Frontend - developed using React.js 
